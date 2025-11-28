@@ -1,44 +1,34 @@
-// api/subscribe.js
-import { getSubscriptions, setSubscriptions } from "./redisClient.js";
+import { saveSubscription, getSubscriptions, setSubscriptions } from "./redisClient.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    res.statusCode = 405;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: "Method not allowed" }));
-    return;
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
   try {
+    // Lê o corpo bruto
     let body = "";
     for await (const chunk of req) {
       body += chunk;
     }
 
-    const subscription = JSON.parse(body || "{}");
+    // parse JSON puro
+    const subscription = JSON.parse(body);
 
     if (!subscription || !subscription.endpoint) {
-      res.statusCode = 400;
-      res.setHeader("Content-Type", "application/json");
-      res.end(JSON.stringify({ error: "Subscription inválida" }));
-      return;
+      return res.status(400).json({ error: "Subscription inválida" });
     }
 
     const subs = await getSubscriptions();
     const exists = subs.some(s => s.endpoint === subscription.endpoint);
 
     if (!exists) {
-      subs.push(subscription);
-      await setSubscriptions(subs);
+      await saveSubscription(subscription);  // <-- salvando corretamente no Redis
     }
 
-    res.statusCode = 201;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ ok: true }));
+    return res.status(201).json({ ok: true });
   } catch (err) {
-    console.error(err);
-    res.statusCode = 500;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: "Erro interno" }));
+    console.error("Erro subscribe:", err);
+    return res.status(500).json({ error: "Erro interno" });
   }
 }
