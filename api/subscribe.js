@@ -8,7 +8,12 @@ export default async function handler(req, res) {
   try {
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
-    const body = Buffer.concat(chunks).toString();
+    let body = Buffer.concat(chunks).toString();
+
+    // Se veio URL-encoded (Safari costuma fazer isso), decodifica
+    if (body.startsWith("%7B")) {
+      body = decodeURIComponent(body);
+    }
 
     const subscription = JSON.parse(body);
 
@@ -26,6 +31,6 @@ export default async function handler(req, res) {
     return res.status(201).json({ ok: true });
   } catch (err) {
     console.error("Erro subscribe:", err);
-    return res.status(500).json({ error: "Erro interno" });
+    return res.status(500).json({ error: "Erro interno", details: err.message });
   }
 }
