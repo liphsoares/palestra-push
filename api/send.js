@@ -26,16 +26,22 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const subs = await getSubscriptions();
+    // Recebe a notificação personalizada enviada pelo painel
+    const { title, body, actions, tag } = req.body;
 
+    const payload = JSON.stringify({
+      title: title || "Nova Notificação",
+      body: body || "",
+      actions: actions || [],
+      tag: tag || "default"
+    });
+
+    const subs = await getSubscriptions();
     const results = [];
 
     for (const sub of subs) {
       try {
-        await webpush.sendNotification(sub, JSON.stringify({
-          title: "Boas Práticas Digitais",
-          body: "Sua atenção é sua maior riqueza. Preservá-la transforma tudo.",
-        }));
+        await webpush.sendNotification(sub, payload);
         results.push({ endpoint: sub.endpoint, ok: true });
       } catch (err) {
         results.push({
