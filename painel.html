@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Painel — Palestra Push</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #fff;
+    padding: 20px;
+  }
+
+  h1 { margin-bottom: 10px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #333;
+    color: #fff;
+    text-align: left;
+  }
+
+  .btn:hover {
+    background: #444;
+  }
+
+  .cat {
+    margin-top: 40px;
+    font-size: 20px;
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Painel do Palestrante</h1>
+<p>Dispare as notificações durante a palestra com 1 clique.</p>
+
+<!-- CATEGORIA 1 -->
+<div class="cat">Abertura Sensorial</div>
+
+<button class="btn" onclick="sendNot('toqueFantasma')">
+  🔔 Toque Fantasma — “Seu cérebro esperou isso…”
+</button>
+
+<button class="btn" onclick="sendNot('interrupcao')">
+  ⚡ Interrupção — Provar perda de foco
+</button>
+
+
+<!-- CATEGORIA 2 -->
+<div class="cat">Votações Ao Vivo</div>
+
+<button class="btn" onclick="sendNot('votoSono')">
+  🛏️ Votação: Onde seu celular dorme?
+</button>
+
+<button class="btn" onclick="sendNot('votoAnsiedade')">
+  ❤️ Votação: Seu coração acelerou?
+</button>
+
+
+<!-- CATEGORIA 3 -->
+<div class="cat">Emoção Familiar</div>
+
+<button class="btn" onclick="sendNot('quemPrecisa')">
+  👨‍👩‍👧 Quem precisa da sua presença hoje?
+</button>
+
+
+<!-- CATEGORIA 4 -->
+<div class="cat">Narrativa em 3 Atos</div>
+
+<button class="btn" onclick="sendNot('story1')">
+  1️⃣ História Parte 1 — “Seu filho te chamou”
+</button>
+
+<button class="btn" onclick="sendNot('story2')">
+  2️⃣ História Parte 2 — “Você disse: peraí…”
+</button>
+
+<button class="btn" onclick="sendNot('story3')">
+  3️⃣ História Parte 3 — “O vídeo ganhou de novo”
+</button>
+
+
+<!-- CATEGORIA 5 -->
+<div class="cat">Soluções e Desafio</div>
+
+<button class="btn" onclick="sendNot('desafioDespertador')">
+  ⏰ Desafio do Despertar — Hora do Despertador
+</button>
+
+<button class="btn" onclick="sendNot('janelaPresenca')">
+  📵 15 Minutos de Presença — Compromisso diário
+</button>
+
+
+<!-- CATEGORIA 6 -->
+<div class="cat">Encerramento</div>
+
+<button class="btn" onclick="sendNot('ctaFinal')">
+  ⭐ Encerramento — Fica comigo
+</button>
+
+<script>
+const TOKEN = "15975378"; // coloque seu ADMIN_TOKEN
+
+async function sendNot(id) {
+  let payload = {};
+
+  // ------------------------
+  // MAPA DE NOTIFICAÇÕES
+  // ------------------------
+
+  if (id === "toqueFantasma") {
+    payload = {
+      title: "Seu cérebro esperou isso, não esperou?",
+      body: "Você reagiu antes mesmo de decidir.",
+      tag: "toque-fantasma"
+    };
+  }
+
+  if (id === "interrupcao") {
+    payload = {
+      title: "Interrompido.",
+      body: "Você olhou sem pensar. Isso é impulso.",
+      tag: "interrupcao"
+    };
+  }
+
+  if (id === "votoSono") {
+    payload = {
+      title: "Seu celular dorme onde?",
+      body: "Escolha abaixo:",
+      actions: [
+        { action: "cama",  title: "Na cama comigo" },
+        { action: "longe", title: "Longe de mim" }
+      ],
+      tag: "votacao-sono"
+    };
+  }
+
+  if (id === "votoAnsiedade") {
+    payload = {
+      title: "Seu coração acelerou agora?",
+      body: "Seja sincero:",
+      actions: [
+        { action: "sim",  title: "Sim" },
+        { action: "nao",  title: "Não" }
+      ],
+      tag: "votacao-ansiedade"
+    };
+  }
+
+  if (id === "quemPrecisa") {
+    payload = {
+      title: "Quem precisa da sua presença hoje?",
+      body: "Escolha com o coração.",
+      actions: [
+        { action: "filho",    title: "Filho(a)" },
+        { action: "conjuge",  title: "Cônjuge" },
+        { action: "pais",     title: "Pais" }
+      ],
+      tag: "quem-precisa"
+    };
+  }
+
+  if (id === "story1") {
+    payload = {
+      title: "Seu filho te chamou.",
+      body: "Pai, olha isso aqui.",
+      tag: "historia-1"
+    };
+  }
+
+  if (id === "story2") {
+    payload = {
+      title: "Você disse: peraí…",
+      body: "Só mais 20 segundos.",
+      tag: "historia-2"
+    };
+  }
+
+  if (id === "story3") {
+    payload = {
+      title: "O vídeo ganhou.",
+      body: "De novo.",
+      tag: "historia-3"
+    };
+  }
+
+  if (id === "desafioDespertador") {
+    payload = {
+      title: "O celular não é despertador.",
+      body: "Hoje começa o Desafio do Despertar.",
+      tag: "despertador"
+    };
+  }
+
+  if (id === "janelaPresenca") {
+    payload = {
+      title: "Comece hoje.",
+      body: "15 minutos sem celular com a sua família.",
+      tag: "janela-presenca"
+    };
+  }
+
+  if (id === "ctaFinal") {
+    payload = {
+      title: "Se você quer recuperar seu lar das telas...",
+      body: "Fica comigo. Eu ensino isso todo dia.",
+      tag: "cta-final"
+    };
+  }
+
+  // ------------------------
+  // ENVIAR PARA O SERVIDOR
+  // ------------------------
+  await fetch(`/api/send?token=${TOKEN}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  alert("Notificação enviada!");
+}
+</script>
+
+</body>
+</html>
