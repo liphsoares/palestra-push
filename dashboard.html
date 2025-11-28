@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard ao Vivo</title>
+<style>
+  body {
+    background: #111;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    padding: 20px;
+  }
+
+  h1 { margin-bottom: 10px; }
+  #tagSelect { width: 100%; padding: 10px; font-size: 16px; margin-bottom: 20px; }
+
+  .result {
+    margin: 10px 0;
+    padding: 15px;
+    background: #222;
+    border-radius: 8px;
+  }
+
+  .bar {
+    height: 20px;
+    background: #4caf50;
+    border-radius: 5px;
+    transition: width 0.5s;
+    margin-top: 5px;
+  }
+
+  .label {
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Resultados em Tempo Real</h1>
+
+<select id="tagSelect" onchange="loadResults()">
+  <option value="votacao-sono">Votação: Onde o celular dorme?</option>
+  <option value="votacao-ansiedade">Coração acelerou?</option>
+  <option value="quem-precisa">Quem precisa de você?</option>
+  <option value="historia-1">História (cliques)</option>
+  <option value="despertador">Desafio do Despertador</option>
+</select>
+
+<div id="results"></div>
+
+<script>
+async function loadResults() {
+  const tag = document.getElementById("tagSelect").value;
+
+  const res = await fetch(`/api/results?tag=${tag}`);
+  const data = await res.json();
+
+  const total = Object.values(data).reduce((a, b) => a + Number(b), 0);
+
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "";
+
+  for (const [action, count] of Object.entries(data)) {
+    const percent = total > 0 ? Math.round((count / total) * 100) : 0;
+
+    resultsDiv.innerHTML += `
+      <div class="result">
+        <div class="label">${action.toUpperCase()} — ${count} votos (${percent}%)</div>
+        <div class="bar" style="width: ${percent}%"></div>
+      </div>
+    `;
+  }
+}
+
+// Atualiza a cada 1 segundo
+setInterval(loadResults, 1000);
+
+// Carrega inicial
+loadResults();
+</script>
+
+</body>
+</html>
