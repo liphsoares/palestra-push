@@ -1,6 +1,4 @@
-// app.js
-
-const VAPID_PUBLIC_KEY = "BKadHDKcwxX0QSnLuKbKgfP15GTCOZZUYdeffFBTvjqxUNBxL0PGhSEMno8LK70okAOWZT3TIFkoyIPlsfY87aU"; // substitua aqui
+const VAPID_PUBLIC_KEY = "BKadHDKcwxX0QSnLuKbKgfP15GTCOZZUYdeffFBTvjqxUNBxL0PGhSEMno8LK70okAOWZT3TIFkoyIPlsfY87aU";
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -23,7 +21,7 @@ async function registerServiceWorker() {
     return null;
   }
 
-  return navigator.serviceWorker.register("/service-worker.js");
+  return navigator.serviceWorker.register("/service-worker.js", { scope: "/" });
 }
 
 async function subscribeUser() {
@@ -31,7 +29,11 @@ async function subscribeUser() {
     const registration = await registerServiceWorker();
     if (!registration) return;
 
+    // DIFERENÇA CRUCIAL PARA ANDROID
+    await navigator.serviceWorker.ready;
+
     const permission = await Notification.requestPermission();
+
     if (permission !== "granted") {
       alert("Sem permissão para notificações, a experiência fica limitada.");
       return;
@@ -44,9 +46,7 @@ async function subscribeUser() {
 
     await fetch("/api/subscribe", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(subscription)
     });
 
@@ -57,6 +57,5 @@ async function subscribeUser() {
   }
 }
 
-document.getElementById("btnParticipar").addEventListener("click", () => {
-  subscribeUser();
-});
+document.getElementById("btnParticipar")
+  .addEventListener("click", subscribeUser);
