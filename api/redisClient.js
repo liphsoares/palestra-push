@@ -32,14 +32,17 @@ export async function saveSubscription(subscription) {
 
 // obter TODAS as inscrições
 export async function getSubscriptions() {
-  return await redisCommand(
+  const list = await redisCommand(
     "lrange",
     "subscriptions",
     0,
     -1
-  ).then(list =>
-    list.map(item => JSON.parse(item)) // converte JSON string → objeto
   );
+
+  // se vier nulo, retorna array vazio
+  if (!list || list.length === 0) return [];
+
+  return list.map(item => JSON.parse(item));
 }
 
 // salvar lista inteira novamente (caso delete)
@@ -49,9 +52,4 @@ export async function setSubscriptions(allSubs) {
   for (const sub of allSubs) {
     await saveSubscription(sub);
   }
-}
-
-// APAGAR TODAS AS INSCRIÇÕES
-export async function clearSubscriptions() {
-  return await redisCommand("del", "subscriptions");
 }
