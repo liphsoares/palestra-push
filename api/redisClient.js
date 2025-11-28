@@ -1,40 +1,53 @@
-// api/redisClient.js
+const baseUrl = process.env.UPSTASH_REDIS_REST_URL;
+const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
-const { UPSTASH_REDIS_REST_URL, UPSTASH_REDIS_REST_TOKEN } = process.env;
+// executa um comando REST no Upstash
+async function redisCommand(command, ...args) {
+  const url = `${baseUrl}/${command}/${args.join('/')}`;
 
-if (!UPSTASH_REDIS_REST_URL || !UPSTASH_REDIS_REST_TOKEN) {
-  console.warn("UPSTASH_REDIS_REST_URL ou UPSTASH_REDIS_REST_TOKEN não configurados.");
-}
-
-async function redisCommand(commandArray) {
-  const res = await fetch(UPSTASH_REDIS_REST_URL, {
-    method: "POST",
+  const res = await fetch(url, {
+    method: 'POST',
     headers: {
-      Authorization: `Bearer ${UPSTASH_REDIS_REST_TOKEN}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ command: commandArray })
+      Authorization: `Bearer ${token}`,
+    }
   });
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error("Erro no Redis: " + text);
+  const data = await res.json();
+
+  if (data.error) {
+    throw new Error(`Erro no Redis: ${JSON.stringify(data)}`);
   }
 
-  const data = await res.json();
   return data.result;
 }
 
-export async function getSubscriptions() {
-  const result = await redisCommand(["GET", "push_subscriptions"]);
-  if (!result) return [];
-  try {
-    return JSON.parse(result);
-  } catch {
-    return [];
-  }
+// salvar nova inscrição
+export async function saveSubscription(subscription) {
+  return await redisCommand(
+    "rpush",
+    "subscriptions",
+    JSON.stringify(subscription)
+  );
 }
 
-export async function setSubscriptions(subs) {
-  await redisCommand(["SET", "push_subscriptions", JSON.stringify(subs)]);
+// obter TODAS as inscrições
+export async function getSubscriptions() {
+  return await redisCommand(
+    "lrange",
+    "subscriptions",
+    0,
+    -1
+  ).then(list =>
+    list.map(item => JSON.parse(item)) // converte JSON string → objeto
+  );
+}
+
+// salvar lista inteira novamente (caso delete)
+export async function setSubscriptions(allSubs) {
+  // apaga tudo e reinsere apenas itens válidos
+  await redisCommand("del", "subscriptions");
+
+  for (const sub of allSubs) {
+    await saveSubscription(sub);
+  }
 }
