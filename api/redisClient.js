@@ -44,10 +44,14 @@ export async function getSubscriptions() {
 
 // salvar lista inteira novamente (caso delete)
 export async function setSubscriptions(allSubs) {
-  // apaga tudo e reinsere apenas itens válidos
   await redisCommand("del", "subscriptions");
 
   for (const sub of allSubs) {
     await saveSubscription(sub);
   }
+}
+
+// APAGAR TODAS AS INSCRIÇÕES
+export async function clearSubscriptions() {
+  return await redisCommand("del", "subscriptions");
 }
