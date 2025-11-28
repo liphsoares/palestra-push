@@ -1,6 +1,6 @@
 // app.js
 
-const VAPID_PUBLIC_KEY = "SUA_PUBLIC_KEY_AQUI"; // substitua aqui
+const VAPID_PUBLIC_KEY = "BKadHDKcwxX0QSnLuKbKgfP15GTCOZZUYdeffFBTvjqxUNBxL0PGhSEMno8LK70okAOWZT3TIFkoyIPlsfY87aU"; // substitua aqui
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
