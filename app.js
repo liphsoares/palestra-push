@@ -29,9 +29,14 @@ async function subscribeUser() {
     const registration = await registerServiceWorker();
     if (!registration) return;
 
-    // DIFERENÇA CRUCIAL PARA ANDROID
+    // Ajuste obrigatório para Samsung Galaxy (S9/S10/S20/S21/A52)
+    // Dá tempo do Service Worker ativar antes da permissão
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    // Garante que o SW está realmente ativo
     await navigator.serviceWorker.ready;
 
+    // Pedido de permissão (somente após clique)
     const permission = await Notification.requestPermission();
 
     if (permission !== "granted") {
@@ -39,11 +44,13 @@ async function subscribeUser() {
       return;
     }
 
+    // Finalmente assina a Push API
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
     });
 
+    // Envia para o backend salvar no Redis
     await fetch("/api/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
