@@ -2,14 +2,13 @@ import { getSubscriptions } from "./redisClient.js";
 
 export default async function handler(req, res) {
   try {
-    const data = await getSubscriptions();
+    const subs = await getSubscriptions();
 
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ subscriptions: data }, null, 2));
+    return res.status(200).json({
+      count: subs.length,
+      subscriptions: subs
+    });
   } catch (err) {
-    res.statusCode = 500;
-    res.setHeader("Content-Type", "application/json");
-    res.end(JSON.stringify({ error: err.message }));
+    return res.status(500).json({ error: "Erro interno", details: err.message });
   }
 }

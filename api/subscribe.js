@@ -6,27 +6,28 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Lê manualmente o body (Vercel não parseia sozinho)
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
     let body = Buffer.concat(chunks).toString();
 
-    // Se veio URL-encoded (Safari costuma fazer isso), decodifica
+    // Se veio URL-encoded (Safari iOS), decodifica
     if (body.startsWith("%7B")) {
       body = decodeURIComponent(body);
     }
 
-    const subscription = JSON.parse(body);
+    let subscription;
+    try {
+      subscription = JSON.parse(body);
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid JSON", received: body });
+    }
 
     if (!subscription || !subscription.endpoint) {
       return res.status(400).json({ error: "Subscription inválida" });
     }
 
-    const subs = await getSubscriptions();
-    const exists = subs.some(s => s.endpoint === subscription.endpoint);
-
-    if (!exists) {
-      await saveSubscription(subscription);
-    }
+    await saveSubscription(subscription);
 
     return res.status(201).json({ ok: true });
   } catch (err) {

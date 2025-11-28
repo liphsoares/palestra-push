@@ -1,55 +1,52 @@
-const baseUrl = process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+import { Redis } from "@upstash/redis";
 
-// executa um comando REST no Upstash
-async function redisCommand(command, ...args) {
-  const url = `${baseUrl}/${command}/${args.join('/')}`;
+const redis = Redis.fromEnv();
 
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    }
-  });
+const KEY = "subscriptions";
 
-  const data = await res.json();
-
-  if (data.error) {
-    throw new Error(`Erro no Redis: ${JSON.stringify(data)}`);
-  }
-
-  return data.result;
-}
-
-// salvar nova inscrição
-export async function saveSubscription(subscription) {
-  return await redisCommand(
-    "rpush",
-    "subscriptions",
-    JSON.stringify(subscription)
-  );
-}
-
-// obter TODAS as inscrições
 export async function getSubscriptions() {
-  const list = await redisCommand(
-    "lrange",
-    "subscriptions",
-    0,
-    -1
-  );
+  try {
+    const data = await redis.get(KEY);
 
-  // se vier nulo, retorna array vazio
-  if (!list || list.length === 0) return [];
+    if (!data) return [];
 
-  return list.map(item => JSON.parse(item));
+    let raw = typeof data === "string" ? data : data.toString();
+
+    // Se veio URL-encoded (%7B %5B etc)
+    if (raw.startsWith("%7B") || raw.startsWith("%5B")) {
+      raw = decodeURIComponent(raw);
+    }
+
+    const parsed = JSON.parse(raw);
+
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed;
+  } catch (err) {
+    console.error("Erro ao ler subscriptions:", err);
+    return [];
+  }
 }
 
-// salvar lista inteira novamente (caso delete)
-export async function setSubscriptions(allSubs) {
-  await redisCommand("del", "subscriptions");
+export async function saveSubscription(subscription) {
+  try {
+    const subs = await getSubscriptions();
 
-  for (const sub of allSubs) {
-    await saveSubscription(sub);
+    const exists = subs.some(s => s.endpoint === subscription.endpoint);
+
+    if (!exists) {
+      subs.push(subscription);
+      await redis.set(KEY, JSON.stringify(subs));
+    }
+  } catch (err) {
+    console.error("Erro ao salvar subscription:", err);
+  }
+}
+
+export async function clearSubscriptions() {
+  try {
+    await redis.del(KEY);
+  } catch (err) {
+    console.error("Erro ao limpar Redis:", err);
   }
 }
