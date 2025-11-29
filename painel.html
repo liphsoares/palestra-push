@@ -18,7 +18,7 @@
     width: 100%;
     margin: 10px 0;
     padding: 15px;
-    font-size: 16px;
+    font-size: 18px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -33,7 +33,8 @@
 
   .cat {
     margin-top: 40px;
-    font-size: 20px;
+    font-size: 22px;
+    font-weight: bold;
     border-bottom: 1px solid #555;
     padding-bottom: 5px;
   }
@@ -42,74 +43,39 @@
 <body>
 
 <h1>Painel do Palestrante</h1>
-<p>Dispare as notificações durante a palestra com 1 clique.</p>
+<p>Dispare as notificações no momento exato da palestra.</p>
 
-<!-- CATEGORIA 1 -->
-<div class="cat">Abertura Sensorial</div>
+<!-- 1. ABERTURA SENSORIAL -->
+<div class="cat">1 – Abertura Sensorial</div>
 
-<button class="btn" onclick="sendNot('toqueFantasma')">
-  🔔 Toque Fantasma — “Seu cérebro esperou isso…”
-</button>
-
-<button class="btn" onclick="sendNot('interrupcao')">
-  ⚡ Interrupção — Provar perda de foco
+<button class="btn" onclick="sendNot('notif1')">
+  🔔 Notificação 1 — “Seu cérebro não mente”
 </button>
 
 
-<!-- CATEGORIA 2 -->
-<div class="cat">Votações Ao Vivo</div>
+<!-- 2. DISPUTA PELA ATENÇÃO -->
+<div class="cat">2 – Disputa Pela Atenção</div>
 
-<button class="btn" onclick="sendNot('votoSono')">
-  🛏️ Votação: Onde seu celular dorme?
-</button>
-
-<button class="btn" onclick="sendNot('votoAnsiedade')">
-  ❤️ Votação: Seu coração acelerou?
+<button class="btn" onclick="sendNot('notif2')">
+  ⚡ Notificação 2 — “Você tem 1 novo estímulo”
 </button>
 
 
-<!-- CATEGORIA 3 -->
-<div class="cat">Emoção Familiar</div>
+<!-- 3. VIRADA EMOCIONAL -->
+<div class="cat">3 – Virada Emocional</div>
 
-<button class="btn" onclick="sendNot('quemPrecisa')">
-  👨‍👩‍👧 Quem precisa da sua presença hoje?
+<button class="btn" onclick="sendNot('notif3')">
+  ❤️ Notificação 3 — “Ainda dá tempo”
 </button>
 
 
-<!-- CATEGORIA 4 -->
-<div class="cat">Narrativa em 3 Atos</div>
+<!-- 4. ENCERRAMENTO (OPCIONAL) -->
+<div class="cat">4 – Encerramento</div>
 
-<button class="btn" onclick="sendNot('story1')">
-  1️⃣ História Parte 1 — “Seu filho te chamou”
+<button class="btn" onclick="sendNot('notif4')">
+  ⭐ Notificação 4 — “A presença vence”
 </button>
 
-<button class="btn" onclick="sendNot('story2')">
-  2️⃣ História Parte 2 — “Você disse: peraí…”
-</button>
-
-<button class="btn" onclick="sendNot('story3')">
-  3️⃣ História Parte 3 — “O vídeo ganhou de novo”
-</button>
-
-
-<!-- CATEGORIA 5 -->
-<div class="cat">Soluções e Desafio</div>
-
-<button class="btn" onclick="sendNot('desafioDespertador')">
-  ⏰ Desafio do Despertar — Hora do Despertador
-</button>
-
-<button class="btn" onclick="sendNot('janelaPresenca')">
-  📵 15 Minutos de Presença — Compromisso diário
-</button>
-
-
-<!-- CATEGORIA 6 -->
-<div class="cat">Encerramento</div>
-
-<button class="btn" onclick="sendNot('ctaFinal')">
-  ⭐ Encerramento — Fica comigo
-</button>
 
 <script>
 const TOKEN = "15975378"; // coloque seu ADMIN_TOKEN
@@ -117,114 +83,43 @@ const TOKEN = "15975378"; // coloque seu ADMIN_TOKEN
 async function sendNot(id) {
   let payload = {};
 
-  // ------------------------
-  // MAPA DE NOTIFICAÇÕES
-  // ------------------------
+  // -------------------------------
+  // MAPA OFICIAL DE NOTIFICAÇÕES
+  // -------------------------------
 
-  if (id === "toqueFantasma") {
+  if (id === "notif1") {
     payload = {
-      title: "Seu cérebro esperou isso, não esperou?",
-      body: "Você reagiu antes mesmo de decidir.",
-      tag: "toque-fantasma"
+      title: "Seu cérebro não mente",
+      body: "Os estímulos que você consome moldam quem você é.",
+      tag: "cerebro-nao-mente"
     };
   }
 
-  if (id === "interrupcao") {
+  if (id === "notif2") {
     payload = {
-      title: "Interrompido.",
-      body: "Você olhou sem pensar. Isso é impulso.",
-      tag: "interrupcao"
+      title: "Você tem 1 novo estímulo",
+      body: "Seu cérebro adoraria apertar 'ver mais'.",
+      tag: "novo-estimulo"
     };
   }
 
-  if (id === "votoSono") {
+  if (id === "notif3") {
     payload = {
-      title: "Seu celular dorme onde?",
-      body: "Escolha abaixo:",
-      actions: [
-        { action: "cama",  title: "Na cama comigo" },
-        { action: "longe", title: "Longe de mim" }
-      ],
-      tag: "votacao-sono"
+      title: "Ainda dá tempo",
+      body: "Você não perdeu sua família para as telas.",
+      tag: "ainda-da-tempo"
     };
   }
 
-  if (id === "votoAnsiedade") {
+  if (id === "notif4") {
     payload = {
-      title: "Seu coração acelerou agora?",
-      body: "Seja sincero:",
-      actions: [
-        { action: "sim",  title: "Sim" },
-        { action: "nao",  title: "Não" }
-      ],
-      tag: "votacao-ansiedade"
+      title: "A presença vence",
+      body: "A tecnologia não supera o amor de um pai presente.",
+      tag: "presenca-vence"
     };
   }
 
-  if (id === "quemPrecisa") {
-    payload = {
-      title: "Quem precisa da sua presença hoje?",
-      body: "Escolha com o coração.",
-      actions: [
-        { action: "filho",    title: "Filho(a)" },
-        { action: "conjuge",  title: "Cônjuge" },
-        { action: "pais",     title: "Pais" }
-      ],
-      tag: "quem-precisa"
-    };
-  }
-
-  if (id === "story1") {
-    payload = {
-      title: "Seu filho te chamou.",
-      body: "Pai, olha isso aqui.",
-      tag: "historia-1"
-    };
-  }
-
-  if (id === "story2") {
-    payload = {
-      title: "Você disse: peraí…",
-      body: "Só mais 20 segundos.",
-      tag: "historia-2"
-    };
-  }
-
-  if (id === "story3") {
-    payload = {
-      title: "O vídeo ganhou.",
-      body: "De novo.",
-      tag: "historia-3"
-    };
-  }
-
-  if (id === "desafioDespertador") {
-    payload = {
-      title: "O celular não é despertador.",
-      body: "Hoje começa o Desafio do Despertar.",
-      tag: "despertador"
-    };
-  }
-
-  if (id === "janelaPresenca") {
-    payload = {
-      title: "Comece hoje.",
-      body: "15 minutos sem celular com a sua família.",
-      tag: "janela-presenca"
-    };
-  }
-
-  if (id === "ctaFinal") {
-    payload = {
-      title: "Se você quer recuperar seu lar das telas...",
-      body: "Fica comigo. Eu ensino isso todo dia.",
-      tag: "cta-final"
-    };
-  }
-
-  // ------------------------
-  // ENVIAR PARA O SERVIDOR
-  // ------------------------
+  // ENVIO
   await fetch(`/api/send?token=${TOKEN}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
